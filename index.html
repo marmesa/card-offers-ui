@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <title>Projeto</title>
+</head>
+
+<body>
+     <!-- Cabeçalho de informações do sistema -->
+    <header>
+        <div class="title">
+            <h1>Lista de Clientes Cadastrados</h1>
+        </div>
+        <div class="banner">
+            <img src="img/client.jpg"
+                alt="Imagem de várias pessos felizes que representam futuros de clientes">
+        </div>
+    </header>
+
+     <!-- Opções para adicionar um novo cliente -->
+    <section class="newClient">
+        <input type="text" id="newInputClient" placeholder="Nome do cliente:" maxlength="40"> 
+        <input type="text" id="newFirstBenefitClient" placeholder="Benefício Principal:" maxlength="20">
+        <input type="text" id="newSecondBenefitClient" placeholder="Benefício Secundário:" maxlength="20">
+        <button onclick="newClient()" class="addBtn">Adicionar Cliente</button>
+    </section>
+
+    <!-- Tabela de Clientes -->
+    <section class="items">
+        <table id="clientTable">
+            <tr>
+                <th>Nome do cliente</th>
+                <th>Benefício Principal</th>
+                <th>Benefício Secundário</th>
+                <th><img src="https://cdn-icons-png.flaticon.com/512/126/126468.png" width="15px" height="15px"></th>
+            </tr>
+        </table>
+    </section>
+
+    <header class="dividerHeader">
+        <div class="title">
+            <h1>Lista de Cartões Cadastrados</h1>
+        </div>
+        <div class="banner">
+            <img src="img/cartao.jpg"
+                alt="Imagem de vários cartões de crédito para evidenciar as diferenças de cartões possíveis">
+        </div>
+    </header>
+
+    <!-- Opções para adicionar um novo cartão -->
+    <section class="newCard">
+        <input type="text" id="newInputCard" placeholder="Nome do Cartão:" maxlength="40"> 
+        <input type="text" id="newFirstBenefitCard" placeholder="Benefício Principal:" maxlength="20">
+        <input type="text" id="newSecondBenefitCard" placeholder="Benefício Secundário:" maxlength="20">
+        <button onclick="newCard()" class="addBtn">Adicionar Cartao</button>
+    </section>
+
+    <!-- Tabela de Cartões -->
+    <section class="items">
+        <table id="cardTable">
+            <tr>
+                <th>Nome do Cartão</th>
+                <th>Benefício Principal</th>
+                <th>Benefício Secundário</th>
+                <th><img src="https://cdn-icons-png.flaticon.com/512/126/126468.png" width="15px" height="15px"></th>
+            </tr>
+        </table>
+    </section>
+
+    <script src="scripts.js"></script>
+</body>
+
+</html>
+
+
