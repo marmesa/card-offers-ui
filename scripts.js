@@ -1,43 +1,34 @@
-/*
-  --------------------------------------------------------------------------------------
-  Função para obter a lista existente do servidor via requisição GET
-  --------------------------------------------------------------------------------------
-*/
 /* 
   --------------------------------------------------------------------------------------
-  Função para obter listas de clientes e cartões do servidor via requisição GET
+  Função para obter listas de clientes do servidor via requisição GET
   --------------------------------------------------------------------------------------
 */
+
 const getList = async () => {
+  const url = 'http://127.0.0.1:5000/clients';
+
   try {
-    const endpoints = {
-      cliente: 'http://127.0.0.1:5000/cliente',
-      cartao: 'http://127.0.0.1:5000/cartao'
-    };
+    const response = await fetch(url);
 
-    for (const tipo in endpoints) {
-      const response = await fetch(endpoints[tipo], { method: 'GET' });
-
-      if (!response.ok) {
-        throw new Error(`Erro ao buscar ${tipo}: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      data.forEach(item => {
-        const { nome, quantidade, valor } = item;
-
-        if (tipo === "cliente") {
-          insertClient(nome, quantidade, valor);
-        } else {
-          insertCard(nome, quantidade, valor);
-        }
-      });
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
     }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data.clients)) {
+      throw new Error("Formato inesperado: 'clients' não é uma lista.");
+    }
+
+    data.clients.forEach(({ name, income, benefitClient, client_id }) => {
+      insertClient(name, income, benefitClient, client_id);
+    });
+
   } catch (error) {
-    console.error("Erro ao obter listas do servidor:", error);
+    console.error("Erro ao obter listas do servidor:", error.message);
   }
 };
+
 /*
   --------------------------------------------------------------------------------------
   Chamada da função para carregamento inicial dos dados
@@ -48,18 +39,17 @@ getList()
 /* 
   --------------------------------------------------------------------------------------
   Função assíncrona para adicionar um item à lista do servidor via requisição POST,
-  com parâmetros nome, valor e benefício, adaptável para cliente ou cartão
+  com parâmetros nome, renda e benefício para cliente
   --------------------------------------------------------------------------------------
 */
-const postItem = async (nome, valor, beneficio, tipo) => {
+const postClient = async (name, income, benefitClient) => {
   try {
     const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('quantidade', valor);     // Para cliente: renda | Para cartão: limite
-    formData.append('valor', beneficio);      // Para cliente/cartão: benefício
+    formData.append('name', name);
+    formData.append('income', income);     
+    formData.append('benefitClient', benefitClient);      
 
-    const endpoint = tipo === "cliente" ? "cliente" : "cartao";
-    const url = `http://127.0.0.1:5000/${endpoint}`;
+    const url = `http://127.0.0.1:5000/client`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -67,16 +57,14 @@ const postItem = async (nome, valor, beneficio, tipo) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Erro ao adicionar ${tipo}: ${response.status} ${response.statusText}`);
+      throw new Error(`Erro ao adicionar cliente: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} adicionado com sucesso:`, data);
   } catch (error) {
-    console.error(`Erro ao tentar adicionar o ${tipo}:`, error);
+    console.error(`Erro ao tentar adicionar o cliente:`, error);
   }
 };
-
 
 /* 
   --------------------------------------------------------------------------------------
@@ -92,59 +80,44 @@ const insertButton = (parent) => {
 };
 
 
-/* 
+/*
   --------------------------------------------------------------------------------------
-  Função para remover um item da lista ao clicar no botão "close", considerando múltiplas listas
+  Função para remover um item da lista de acordo com o click no botão close
   --------------------------------------------------------------------------------------
 */
 const removeElement = () => {
-  const botoesFechar = document.querySelectorAll(".close");
-
-  botoesFechar.forEach((botao) => {
-    botao.onclick = () => {
-      const linha = botao.closest("tr");
-      const tabela = botao.closest("table");
-      const nomeItem = linha?.querySelector("td")?.textContent;
-
-      if (!nomeItem || !tabela) {
-        console.warn("Informações insuficientes para remover o item.");
-        return;
+  let close = document.getElementsByClassName("close");
+  // var table = document.getElementById('myTable');
+  let i;
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function () {
+      let div = this.parentElement.parentElement;
+      const nomeItem = div.getElementsByTagName('td')[0].innerHTML
+      if (confirm("Você tem certeza?")) {
+        div.remove()
+        deleteItem(nomeItem)
+        alert("Removido!")
       }
+    }
+  }
+}
 
-      // Determina o tipo com base no ID da tabela
-      const tipo = tabela.id === "clientTable" ? "cliente" : "cartao";
-
-      if (confirm(`Você tem certeza que deseja remover este ${tipo}?`)) {
-        linha.remove();
-        deleteItem(nomeItem, tipo);
-        alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} removido!`);
-      }
-    };
-  });
-};
-
-/* 
+/*
   --------------------------------------------------------------------------------------
-  Função assíncrona para deletar um item da lista do servidor via requisição DELETE
+  Função para deletar um item da lista do servidor via requisição DELETE
   --------------------------------------------------------------------------------------
 */
-const deleteItem = async (item, tipo) => {
-  try {
-    const endpoint = tipo === "cliente" ? "cliente" : "cartao";
-    const url = `http://127.0.0.1:5000/${endpoint}?nome=${encodeURIComponent(item)}`;
-    
-    const response = await fetch(url, { method: 'DELETE' });
-
-    if (!response.ok) {
-      throw new Error(`Erro ao deletar ${tipo}: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} deletado com sucesso:`, data);
-  } catch (error) {
-    console.error(`Erro ao tentar deletar o ${tipo}:`, error);
-  }
-};
+const deleteItem = (item) => {
+  console.log(item)
+  let url = 'http://127.0.0.1:5000/client?name=' + item;
+  fetch(url, {
+    method: 'delete'
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
 
 /*
   --------------------------------------------------------------------------------------
@@ -204,7 +177,7 @@ const newClient = () => {
   }
 
   insertClient(nomeCliente, rendaCliente, beneficioCliente);
-  postItem(nomeCliente, rendaCliente, beneficioCliente, cliente);
+  postClient(nomeCliente, rendaCliente, beneficioCliente);
   alert("Cliente adicionado!");
 };
 
@@ -213,11 +186,11 @@ const newClient = () => {
   Função para inserir clientes na lista de clientes
   --------------------------------------------------------------------------------------
 */
-const insertClient = (nomeCliente, rendaCliente, beneficioCliente) => {
+const insertClient = (nomeCliente, rendaCliente, beneficioCliente, client_id) => {
   const table = document.getElementById("clientTable");
   const row = table.insertRow();
 
-  [nomeCliente, rendaCliente, beneficioCliente].forEach((valor) => {
+  [nomeCliente, rendaCliente, beneficioCliente, client_id].forEach((valor) => {
     const celula = row.insertCell();
     celula.textContent = valor;
   });
@@ -237,6 +210,7 @@ const newCard = () => {
   const nomeCartao = document.getElementById("newInputCard").value;
   const limiteCartao = document.getElementById("newLimitCard").value;
   const beneficioCartao = document.getElementById("newBenefitCard").value;
+  const idCliente = document.getElementById("newIdClient").value;
 
   if (!isTextoValido(nomeCartao)) {
     alert("O nome do cartão precisa ser texto válido!");
@@ -248,13 +222,18 @@ const newCard = () => {
     return;
   }
 
+  if (isNaN(idCliente)) {
+    alert("O id do cliente cadastrado precisa ser um valor numérico!");
+    return;
+  }
+
   if (!isTextoValido(beneficioCartao)) {
     alert("Os benefícios precisam ser texto válido!");
     return;
   }
 
-  insertCard(nomeCartao, limiteCartao, beneficioCartao);
-  postItem(nomeCartao, limiteCartao, beneficioCartao, cartao);
+  insertCard(nomeCartao, limiteCartao, beneficioCartao, idCliente);
+  postCard(nomeCartao, limiteCartao, beneficioCartao, idCliente);
   alert("Cartão adicionado!");
 };
 
@@ -263,11 +242,11 @@ const newCard = () => {
   Função para inserir cartão na lista de cartões
   --------------------------------------------------------------------------------------
 */
-const insertCard = (nomeCartao, limiteCartao, beneficioCartao) => {
+const insertCard = (nomeCartao, limiteCartao, beneficioCartao, idCliente) => {
   const table = document.getElementById("cardTable");
   const row = table.insertRow();
 
-  [nomeCartao, limiteCartao, beneficioCartao].forEach((valor) => {
+  [nomeCartao, limiteCartao, beneficioCartao, idCliente].forEach((valor) => {
     const celula = row.insertCell();
     celula.textContent = valor;
   });
@@ -277,5 +256,67 @@ const insertCard = (nomeCartao, limiteCartao, beneficioCartao) => {
   removeElement();
 };
 
+/* 
+  --------------------------------------------------------------------------------------
+  Função assíncrona para adicionar um cartão à lista do servidor via requisição POST,
+  com parâmetros nome, renda, benefício, id do cliente
+  --------------------------------------------------------------------------------------
+*/
+const postCard = async (name, limit, benefitCard, client_id) => {
+  try {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('limit', limit);     
+    formData.append('benefitCard', benefitCard);
+    formData.append('client_id', client_id);      
+
+    const url = `http://127.0.0.1:5000/card`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao adicionar cartão: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+  } catch (error) {
+    console.error(`Erro ao tentar adicionar o cartão:`, error);
+  }
+};
 
 
+/* 
+  --------------------------------------------------------------------------------------
+  Função para obter listas de cartões do servidor via requisição GET
+  --------------------------------------------------------------------------------------
+*/
+
+const getCard = async () => {
+  const url = 'http://127.0.0.1:5000/cards';
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data.cards)) {
+      throw new Error("Formato inesperado: 'clients' não é uma lista.");
+    }
+
+    data.cards.forEach(({ name, limit, benefitCard, client_id}) => {
+      insertCard(name, limit, benefitCard, client_id);
+    });
+
+  } catch (error) {
+    console.error("Erro ao obter listas do servidor:", error.message);
+  }
+};
+
+getCard()

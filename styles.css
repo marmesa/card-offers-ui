@@ -74,7 +74,8 @@ header,
 #newIncomeClient,
 #newBenefitClient,
 #newLimitCard,
-#newBenefitCard {
+#newBenefitCard,
+#newIdClient {
     margin: 0;
     border: 1px solid rgb(35, 32, 24);
     width: 9%;
