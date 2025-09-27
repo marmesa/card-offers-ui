@@ -1,5 +1,7 @@
 # card-offers-ui
 
+Este projeto faz parte da entrega referente ao curso de desenvolvimento de full stack básico da pós graduação da PUC RIO. 
+
 Front-end da aplicação que tem como objetivo cadastrar clientes e cartões com objetivo futuro de mostrar o melhor cartão de acordo com as características do cliente.
 
 ## Como executar
