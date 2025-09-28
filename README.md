@@ -1,25 +1,40 @@
-# card-offers-ui
+# 💳 card-offers-ui
 
-Este projeto faz parte da entrega referente ao curso de desenvolvimento de full stack básico da pós graduação da PUC RIO. 
+Este projeto é parte da entrega do curso de Desenvolvimento Full Stack Básico da pós-graduação da PUC-Rio.
 
-Front-end da aplicação que tem como objetivo cadastrar clientes e cartões com objetivo futuro de mostrar o melhor cartão de acordo com as características do cliente.
+Trata-se do front-end de uma aplicação voltada para o cadastro de clientes e cartões de crédito, com o objetivo futuro de recomendar o melhor cartão com base nas características de cada cliente.
 
-## Como executar
+## 🚀 Como executar
 
-Basta fazer o download do projeto e abrir o arquivo index.html no seu browser.
+Faça o download do projeto e abra o arquivo `index.html` diretamente no navegador.
 
-## Cadastro de um cliente
+## 👤 Cadastro de cliente
 
-Para cadastrar um cliente, preencha o nome do cliente, a renda do cliente e o benefício desejado em um cartão de crédito e em seguida, clique no botão 'Adicionar'. Ao inserir um cliente ele será apresentado na tabela referente a lista de clientes.
+1. Preencha os campos:
+   - Nome do cliente
+   - Renda mensal
+   - Benefício desejado no cartão
 
-## Exclusão de um cliente
+2. Clique em **"Adicionar Cliente"**.
 
-Para excluir um cliente basta clicar no símbolo de lixeira ao lado do registro na tabela referente a lista de clientes.
+O cliente será exibido automaticamente na tabela de clientes.
 
-## Cadastro de um cartão
+## 🗑️ Exclusão de cliente
 
-Para cadastrar um cartão, preencha o nome do cartão, o limite do cartão e o benefício disponibilizado nesse cartão de crédito e em seguida, clique no botão 'Adicionar'. Ao inserir um cartão ele será apresentado na tabela referente a lista de cartão.
+Para remover um cliente, clique no ícone de lixeira ao lado do respectivo registro na tabela.
 
-## Exclusão de um cartão
+## 💳 Cadastro de cartão
 
-Para excluir um cartão basta clicar no símbolo de lixeira ao lado do registro na tabela referente a lista de cartões.
+1. Preencha os campos:
+   - Nome do cartão
+   - Limite disponível
+   - Benefício oferecido
+   - ID do cliente
+
+2. Clique em **"Adicionar Cartão"**.
+
+O cartão será exibido automaticamente na tabela de cartões.
+
+## 🗑️ Exclusão de cartão
+
+Para remover um cartão, clique no ícone de lixeira ao lado do respectivo registro na tabela.
