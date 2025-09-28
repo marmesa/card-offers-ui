@@ -86,38 +86,42 @@ const insertButton = (parent) => {
   --------------------------------------------------------------------------------------
 */
 const removeElement = () => {
-  let close = document.getElementsByClassName("close");
-  // var table = document.getElementById('myTable');
-  let i;
-  for (i = 0; i < close.length; i++) {
-    close[i].onclick = function () {
-      let div = this.parentElement.parentElement;
-      const nomeItem = div.getElementsByTagName('td')[0].innerHTML
+  const closeButtons = document.querySelectorAll(".close");
+
+  closeButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const row = button.closest("tr");
+      const nomeItem = row?.querySelector("td")?.innerText;
+
+      if (!nomeItem) return;
+
       if (confirm("Você tem certeza?")) {
-        div.remove()
-        deleteItem(nomeItem)
-        alert("Removido!")
+        row.remove();
+        deleteItem(nomeItem);
+        alert("Removido!");
       }
-    }
-  }
-}
+    });
+  });
+};
 
 /*
   --------------------------------------------------------------------------------------
   Função para deletar um item da lista do servidor via requisição DELETE
   --------------------------------------------------------------------------------------
 */
-const deleteItem = (item) => {
-  console.log(item)
-  let url = 'http://127.0.0.1:5000/client?name=' + item;
-  fetch(url, {
-    method: 'delete'
-  })
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error('Error:', error);
+const deleteItem = async (item) => {
+  try {
+    const params = new URLSearchParams({ name: item });
+    const response = await fetch(`http://127.0.0.1:5000/client?${params}`, {
+      method: 'DELETE',
     });
-}
+
+    const data = await response.json();
+    console.log('Item deletado:', data);
+  } catch (error) {
+    console.error('Erro ao deletar item:', error);
+  }
+};
 
 /*
   --------------------------------------------------------------------------------------
@@ -140,7 +144,8 @@ const clearFields = () => {
     "newBenefitClient",
     "newInputCard",
     "newLimitCard",
-    "newBenefitCard"
+    "newBenefitCard",
+    "newIdClient"
   ];
 
   campos.forEach((id) => {
